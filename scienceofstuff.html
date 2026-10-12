@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="VSEPR theory explained simply: why molecules are the shape they are, with a 3D shape explorer and a quick quiz.">
+<meta name="author" content="Olly">
+<title>The Science of Stuff</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..600;1,8..60,400&family=JetBrains+Mono:wght@400..600&display=swap">
+<style>
+/* Layout: masthead, then a left-aligned 40rem reading column with margin notes to its right; the shape explorer and quiz break out to the full 72rem container. Magenta always means "lone pair". */
+:root {
+  color-scheme: light;
+  --bg: #F1F5F5;
+  --surface: #FFFFFF;
+  --panel: #E2EAEC;
+  --ink: #12202A;
+  --muted: #56686F;
+  --rule: #D2DCDE;
+  --lp: #CC2E68;
+  --lp-soft: #F8DDE7;
+  --good: #1D7849;
+  --good-soft: #DCF0E4;
+  --bad: #B1352B;
+  --bad-soft: #F7DEDA;
+  --f-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1518; --surface: #132026; --panel: #18272F; --ink: #E3EBED; --muted: #91A2A8;
+    --rule: #24353C; --lp: #FF6E9F; --lp-soft: #3B1C2A; --good: #5DC98F; --good-soft: #14301F;
+    --bad: #F27D71; --bad-soft: #3A1C19; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1518; --surface: #132026; --panel: #18272F; --ink: #E3EBED; --muted: #91A2A8;
+  --rule: #24353C; --lp: #FF6E9F; --lp-soft: #3B1C2A; --good: #5DC98F; --good-soft: #14301F;
+  --bad: #F27D71; --bad-soft: #3A1C19; color-scheme: dark;
+}
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+body {
+  margin: 0;
+  background: var(--bg); color: var(--ink);
+  font-family: var(--f-body); font-size: 1.0625rem; line-height: 1.65;
+  font-optical-sizing: auto;
+}
+a { color: var(--ink); text-decoration-color: var(--muted); text-underline-offset: 3px; }
+a:hover { text-decoration-color: var(--ink); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+sub { font-size: .66em; vertical-align: -0.24em; line-height: 0; }
+sup { font-size: .66em; vertical-align: 0.5em; line-height: 0; }
+.lp { color: var(--lp); font-weight: 600; }
+.mono { font-family: var(--f-mono); }
+
+.wrap { max-width: 72rem; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); }
+
+/* Masthead */
+.mast { border-bottom: 1px solid var(--rule); }
+.mast .wrap { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 24px; padding-block: 14px; }
+.brand { display: flex; align-items: center; gap: 10px; font-family: var(--f-display); font-weight: 800; font-size: 1.2rem; letter-spacing: -0.015em; color: var(--ink); text-decoration: none; }
+.brand svg { width: 30px; height: 30px; flex: none; }
+.mast nav { display: flex; gap: 20px; font-family: var(--f-display); font-size: .9375rem; font-weight: 600; }
+.mast nav a { color: var(--muted); text-decoration: none; }
+.mast nav a:hover { color: var(--ink); }
+
+/* Hero */
+.hero { padding-block: clamp(36px, 7vw, 76px) 8px; }
+.kicker { font-family: var(--f-mono); font-size: .75rem; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+h1 {
+  font-family: var(--f-display); font-weight: 800; font-size: clamp(2.4rem, 6.4vw, 4.4rem);
+  line-height: 1.0; letter-spacing: -0.03em; margin: 0 0 20px; max-width: 15ch; text-wrap: balance;
+}
+.stand { font-size: clamp(1.125rem, 2vw, 1.3rem); line-height: 1.55; max-width: 38rem; margin: 0 0 20px; }
+.byline { font-family: var(--f-mono); font-size: .8125rem; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; }
+
+.parents-fig { margin: 40px 0 0; padding-top: 22px; border-top: 1px solid var(--rule); }
+.parents { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px 12px; }
+.parents li { display: grid; gap: 2px; justify-items: start; min-width: 0; }
+.parents svg { width: 100%; max-width: 112px; height: auto; aspect-ratio: 1; overflow: visible; margin-bottom: 6px; }
+.pcount { font-family: var(--f-display); font-weight: 800; font-size: 1.5rem; line-height: 1; }
+.pcount small { font-size: .8125rem; font-weight: 600; color: var(--muted); margin-left: 4px; }
+.pname { font-family: var(--f-display); font-weight: 600; font-size: .9375rem; line-height: 1.2; }
+.pang { font-family: var(--f-mono); font-size: .75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.parents-fig figcaption { font-size: .9375rem; color: var(--muted); max-width: 40rem; margin-top: 18px; }
+.b { stroke: var(--ink); stroke-width: 2.4; stroke-linecap: round; }
+.w { fill: var(--ink); }
+.h { stroke: var(--ink); stroke-width: 1.6; stroke-linecap: round; }
+.lig { fill: var(--surface); stroke: var(--ink); stroke-width: 1.8; }
+.lig.back { fill: var(--panel); }
+.cen { fill: var(--ink); }
+@media (max-width: 640px) { .parents { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+/* Article */
+h2 {
+  font-family: var(--f-display); font-weight: 700; font-size: clamp(1.5rem, 3vw, 1.9rem);
+  line-height: 1.15; letter-spacing: -0.015em; margin: 0 0 .6em; text-wrap: balance;
+}
+h3 { font-family: var(--f-display); font-weight: 700; font-size: 1.125rem; line-height: 1.3; margin: 0 0 .3em; }
+.prose { max-width: 40rem; padding-top: clamp(40px, 6vw, 64px); }
+.prose p { margin: 0 0 1em; }
+.prose::after { content: ""; display: block; clear: both; }
+
+.note { font-size: .875rem; line-height: 1.5; color: var(--muted); background: var(--panel); border-radius: 10px; padding: 12px 14px; margin: 0 0 1.2em; }
+.note b { display: block; font-family: var(--f-mono); font-size: .6875rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink); margin-bottom: 4px; }
+@media (min-width: 70rem) {
+  .note { float: right; clear: right; width: 14rem; margin: .35em -17rem 1em 0; padding: 0; background: none; border-radius: 0; }
+}
+
+.steps { list-style: none; counter-reset: step; margin: 0 0 1.4em; padding: 0; display: grid; gap: 12px; }
+.steps li { counter-increment: step; display: grid; grid-template-columns: 2rem minmax(0, 1fr); gap: 10px; }
+.steps li::before { content: counter(step); font-family: var(--f-display); font-weight: 800; font-size: 1.05rem; width: 2rem; height: 2rem; border-radius: 50%; border: 1.5px solid var(--ink); display: grid; place-items: center; line-height: 1; margin-top: 1px; }
+
+.rule-box { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 18px 20px; margin: 1.4em 0; }
+.eq { font-family: var(--f-mono); font-weight: 500; font-size: clamp(1.05rem, 2.8vw, 1.35rem); margin: 0 0 12px; }
+.vars { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; margin: 0 0 12px; font-size: .95rem; }
+.vars dt { font-family: var(--f-mono); font-weight: 600; }
+.vars dd { margin: 0; }
+.rule-box .small { font-size: .9rem; color: var(--muted); margin: 0; }
+.worked { border-top: 1px solid var(--rule); margin-top: 14px; padding-top: 12px; font-size: .98rem; }
+.worked p { margin: 0; }
+.label { font-family: var(--f-mono); font-size: .6875rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: block; margin-bottom: 4px; }
+
+.readout { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--rule); margin: 1.2em 0 1.4em; }
+.readout div { padding: 14px 12px 14px 0; display: grid; gap: 2px; min-width: 0; }
+.readout div + div { padding-left: 14px; border-left: 1px solid var(--rule); }
+.ro-f { font-family: var(--f-display); font-weight: 700; font-size: 1.125rem; }
+.ro-a { font-family: var(--f-mono); font-weight: 500; font-size: clamp(1.4rem, 4vw, 1.9rem); font-variant-numeric: tabular-nums; line-height: 1.1; }
+.ro-l { font-size: .8125rem; color: var(--muted); }
+.ro-l.lp { color: var(--lp); font-weight: 600; }
+
+.order { font-family: var(--f-mono); font-size: clamp(.95rem, 2.4vw, 1.1rem); background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 12px 16px; margin: 0 0 1.2em; overflow-x: auto; white-space: nowrap; }
+.order .mix { color: var(--lp); opacity: .75; }
+
+.chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 1.2em; }
+.chips .label { margin: 0 4px 0 0; }
+.chip { font-family: var(--f-display); font-size: .875rem; font-weight: 700; padding: 5px 13px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer; }
+.chip:hover { border-color: var(--ink); }
+
+.limits { display: grid; gap: 18px; margin: 0 0 1.2em; }
+.limits p { margin: 0; }
+
+/* Explorer */
+.explorer { margin-top: clamp(48px, 7vw, 72px); background: var(--surface); border: 1px solid var(--rule); border-radius: 18px; padding: clamp(16px, 3vw, 30px); scroll-margin-top: 12px; }
+.ex-head { max-width: 40rem; margin-bottom: 20px; }
+.ex-head p { margin: 0; }
+.ex-grid { display: grid; gap: 20px; grid-template-columns: minmax(0, 1fr); grid-template-areas: "matrix" "viewer" "info"; }
+.ex-viewer { grid-area: viewer; min-width: 0; }
+.ex-matrix { grid-area: matrix; min-width: 0; }
+.ex-info { grid-area: info; min-width: 0; border-top: 1px solid var(--rule); padding-top: 16px; }
+@media (min-width: 860px) {
+  .ex-grid { grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr); grid-template-areas: "viewer matrix" "viewer info"; grid-template-rows: auto 1fr; gap: 20px 28px; }
+}
+.stage { position: relative; width: 100%; aspect-ratio: 1 / 1; max-height: 560px; max-width: 100%; background: var(--panel); border-radius: 12px; overflow: hidden; }
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.stage canvas:active { cursor: grabbing; }
+.stage-label { position: absolute; left: 14px; top: 12px; font-family: var(--f-mono); font-size: .8125rem; color: var(--muted); pointer-events: none; }
+.stage-fallback { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; margin: 0; color: var(--muted); font-size: .95rem; }
+.legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-top: 10px; font-family: var(--f-display); font-size: .8125rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
+.sw-atom { background: radial-gradient(circle at 35% 35%, #FFFFFF, #8D989E); }
+.sw-lp { background: var(--lp); opacity: .7; width: 10px; height: 15px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; }
+.ghost { margin-left: auto; font-family: var(--f-display); font-size: .8125rem; font-weight: 600; color: var(--ink); background: transparent; border: 1px solid var(--rule); border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.ghost:hover { border-color: var(--ink); }
+
+.matrix { width: 100%; border-collapse: separate; border-spacing: 4px; table-layout: fixed; font-family: var(--f-display); }
+.matrix th { font-family: var(--f-mono); font-size: .6875rem; font-weight: 500; color: var(--muted); padding: 2px; }
+.matrix thead tr:first-child th { text-align: left; }
+.matrix .lphead { color: var(--lp); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; }
+.matrix .corner { width: 3rem; text-align: left; }
+.matrix tbody th { font-family: var(--f-display); font-size: 1rem; font-weight: 800; color: var(--ink); text-align: left; }
+.matrix td { padding: 0; }
+.matrix td.empty { border: 1px dashed var(--rule); border-radius: 8px; }
+.matrix button { width: 100%; min-height: 58px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 6px 3px; border: 1px solid var(--rule); border-radius: 8px; background: var(--bg); color: var(--ink); font-family: inherit; cursor: pointer; }
+.matrix button:hover { border-color: var(--ink); }
+.matrix button[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.m-f { font-size: 1rem; font-weight: 700; line-height: 1.1; }
+.m-s { font-size: .6875rem; line-height: 1.15; color: var(--muted); text-align: center; }
+.matrix button[aria-pressed="true"] .m-s { color: var(--bg); opacity: .8; }
+@media (max-width: 560px) { .m-s { display: none; } .matrix button { min-height: 46px; } .matrix .corner { width: 2.4rem; } }
+.matrix-cap { font-size: .875rem; color: var(--muted); margin: 8px 0 0; }
+
+.info-top { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; }
+.info-f { font-family: var(--f-display); font-weight: 800; font-size: 2.1rem; line-height: 1; }
+.info-name { font-family: var(--f-display); font-size: 1rem; color: var(--muted); }
+.facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 20px; margin: 16px 0; }
+.facts dt { font-family: var(--f-mono); font-size: .6875rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.facts dd { margin: 2px 0 0; font-family: var(--f-display); font-weight: 600; font-size: 1.0625rem; line-height: 1.3; }
+.facts dd.mono { font-family: var(--f-mono); font-weight: 500; font-variant-numeric: tabular-nums; }
+.info-note { margin: 0; font-size: .98rem; }
+
+/* Quiz */
+.quiz { padding-top: clamp(40px, 6vw, 64px); }
+.quiz > .intro { max-width: 40rem; }
+.quiz > .intro p { margin: 0 0 20px; }
+.quiz-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 16px; }
+.q { background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.q-f { font-family: var(--f-display); font-weight: 800; font-size: 2.3rem; line-height: 1; }
+.q-ask { margin: 0; color: var(--muted); font-size: .95rem; }
+.q-opts { display: grid; gap: 8px; }
+.q-opts button { display: flex; justify-content: space-between; align-items: center; gap: 8px; text-align: left; padding: 10px 14px; border: 1px solid var(--rule); border-radius: 10px; background: var(--bg); color: var(--ink); font-family: var(--f-display); font-size: .9375rem; font-weight: 600; cursor: pointer; }
+.q-opts button:hover:not(:disabled) { border-color: var(--ink); }
+.q-opts button:disabled { cursor: default; opacity: .55; }
+.q-opts button.right { opacity: 1; background: var(--good-soft); border-color: var(--good); }
+.q-opts button.right::after { content: "✓"; color: var(--good); font-weight: 800; }
+.q-opts button.wrong { opacity: 1; background: var(--bad-soft); border-color: var(--bad); }
+.q-opts button.wrong::after { content: "✗"; color: var(--bad); font-weight: 800; }
+.q-why { font-size: .95rem; display: grid; gap: 10px; justify-items: start; }
+.q-why p { margin: 0; }
+.q-why:focus { outline: none; }
+.q-verdict.good { color: var(--good); }
+.q-verdict.bad { color: var(--bad); }
+
+.refs { font-size: .9375rem; padding-left: 1.2em; margin: 0; display: grid; gap: 6px; color: var(--muted); }
+.refs i { color: var(--ink); }
+
+/* Footer */
+.foot { border-top: 1px solid var(--rule); margin-top: clamp(56px, 8vw, 88px); }
+.foot .wrap { padding-block: 28px 48px; display: grid; gap: 10px; }
+.foot .brand { font-size: 1rem; }
+.foot p { margin: 0; max-width: 40rem; font-size: .9375rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+
+<header class="mast">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="The Science of Stuff, home">
+      <svg viewBox="-15 -15 30 30" aria-hidden="true">
+        <ellipse cx="-4.6" cy="-7.5" rx="2.7" ry="4.6" transform="rotate(-28 -4.6 -7.5)" fill="var(--lp)" opacity=".75"/>
+        <ellipse cx="4.6" cy="-7.5" rx="2.7" ry="4.6" transform="rotate(28 4.6 -7.5)" fill="var(--lp)" opacity=".75"/>
+        <line x1="0" y1="1" x2="-8" y2="7.5" class="b" style="stroke-width:2"/>
+        <line x1="0" y1="1" x2="8" y2="7.5" class="b" style="stroke-width:2"/>
+        <circle cx="-8.5" cy="8" r="3.4" class="lig" style="stroke-width:1.6"/>
+        <circle cx="8.5" cy="8" r="3.4" class="lig" style="stroke-width:1.6"/>
+        <circle cx="0" cy="1" r="5" class="cen"/>
+      </svg>
+      The Science of Stuff
+    </a>
+    <nav aria-label="Site">
+      <a href="#top">Posts</a>
+      <a href="#about">About</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap">
+    <section class="hero">
+      <p class="kicker">Chemistry · Molecular shape</p>
+      <h1>Why molecules are the shape they are</h1>
+      <p class="stand">Water is bent, carbon dioxide is straight and methane is a tetrahedron. One simple rule explains all three, and most other small molecules too. It's called VSEPR theory.</p>
+      <p class="byline"><span>By Olly</span><span>14 August 2024</span><span>6 min read</span></p>
+
+      <figure class="parents-fig">
+        <ol class="parents" id="parents"></ol>
+        <figcaption>The five parent shapes. Count the electron pairs around the central atom and you land on one of these. Solid wedges point towards you; hashed bonds point away.</figcaption>
+      </figure>
+      <script>
+      (function () {
+        var shapes = [
+          { n: 2, name: "Linear", angle: "180°", b: [["p", -36, 0], ["p", 36, 0]] },
+          { n: 3, name: "Trigonal planar", angle: "120°", b: [["p", 0, -36], ["p", -31, 18], ["p", 31, 18]] },
+          { n: 4, name: "Tetrahedral", angle: "109.5°", b: [["p", 0, -36], ["p", -32, 16], ["d", 31, 4], ["w", 19, 27]] },
+          { n: 5, name: "Trigonal bipyramidal", angle: "90° and 120°", b: [["p", 0, -38], ["p", 0, 38], ["p", -36, 4], ["d", 28, -11], ["w", 23, 19]] },
+          { n: 6, name: "Octahedral", angle: "90°", b: [["p", 0, -38], ["p", 0, 38], ["p", -38, 0], ["p", 38, 0], ["d", 21, -21], ["w", -21, 21]] }
+        ];
+        function f(v) { return v.toFixed(1); }
+        function bond(t, x, y) {
+          if (t === "p") return '<line class="b" x1="0" y1="0" x2="' + x + '" y2="' + y + '"/>';
+          var L = Math.hypot(x, y), nx = -y / L, ny = x / L;
+          if (t === "w") {
+            var w = 5.2;
+            return '<polygon class="w" points="' + f(nx * .8) + ',' + f(ny * .8) + ' ' + f(x + nx * w) + ',' + f(y + ny * w) + ' ' + f(x - nx * w) + ',' + f(y - ny * w) + ' ' + f(-nx * .8) + ',' + f(-ny * .8) + '"/>';
+          }
+          var s = "";
+          for (var i = 1; i <= 6; i++) {
+            var t2 = 0.2 + i * 0.11, cx = x * t2, cy = y * t2, h = 1 + i * 0.75;
+            s += '<line class="h" x1="' + f(cx + nx * h) + '" y1="' + f(cy + ny * h) + '" x2="' + f(cx - nx * h) + '" y2="' + f(cy - ny * h) + '"/>';
+          }
+          return s;
+        }
+        function ball(x, y, cls) { return '<circle class="' + cls + '" cx="' + x + '" cy="' + y + '" r="6.5"/>'; }
+        var html = "";
+        shapes.forEach(function (s) {
+          var svg = "";
+          s.b.forEach(function (b) { svg += bond(b[0], b[1], b[2]); });
+          s.b.filter(function (b) { return b[0] === "d"; }).forEach(function (b) { svg += ball(b[1], b[2], "lig back"); });
+          s.b.filter(function (b) { return b[0] === "p"; }).forEach(function (b) { svg += ball(b[1], b[2], "lig"); });
+          svg += '<circle class="cen" cx="0" cy="0" r="9"/>';
+          s.b.filter(function (b) { return b[0] === "w"; }).forEach(function (b) { svg += ball(b[1], b[2], "lig"); });
+          html += '<li><svg viewBox="-50 -50 100 100" role="img" aria-label="' + s.name + ' arrangement of ' + s.n + ' electron pairs">' + svg + '</svg>' +
+            '<span class="pcount">' + s.n + '<small>pairs</small></span><span class="pname">' + s.name + '</span><span class="pang">' + s.angle + '</span></li>';
+        });
+        document.getElementById("parents").innerHTML = html;
+      })();
+      </script>
+    </section>
+
+    <article>
+      <section class="prose" id="idea">
+        <h2>The one idea</h2>
+        <aside class="note"><b>Who came up with it?</b>Nevil Sidgwick and Herbert Powell spotted the pattern in 1940. Ronald Gillespie and Ronald Nyholm turned it into the rules taught today in 1957.</aside>
+        <p>VSEPR stands for <em>valence shell electron pair repulsion</em>, and the name is basically the whole theory. The outer electrons around a central atom come in pairs. The pairs all carry negative charge, so they repel each other, and they settle into the arrangement that keeps them as far apart as possible.</p>
+        <p>There are two kinds of pair. A <strong>bonding pair</strong> is shared between the central atom and another atom. A <span class="lp">lone pair</span> belongs to the central atom alone. Both count, and both push.</p>
+        <p>One detail trips people up. A double or triple bond counts once. All the electrons in a multiple bond point the same way, so they behave as one region of charge. That's why chemists often say <em>electron domain</em> instead of electron pair.</p>
+        <p>So the recipe is simple. Count the domains, spread them out evenly, then look at where the atoms ended up.</p>
+      </section>
+
+      <section class="prose" id="counting">
+        <h2>Counting the pairs</h2>
+        <ol class="steps">
+          <li><span>Find the central atom and count its outer-shell (valence) electrons.</span></li>
+          <li><span>Work out how many electron pairs it has, using the formula below.</span></li>
+          <li><span>Pick the electron geometry from the number of pairs: 2 linear, 3 trigonal planar, 4 tetrahedral, 5 trigonal bipyramidal, 6 octahedral.</span></li>
+          <li><span>Name the shape from the atoms only. Lone pairs decide where the atoms go, but they don't appear in the shape's name.</span></li>
+        </ol>
+
+        <div class="rule-box">
+          <p class="eq">pairs = (V + M − q) ÷ 2</p>
+          <dl class="vars">
+            <dt>V</dt><dd>valence electrons on the central atom</dd>
+            <dt>M</dt><dd>atoms joined to it by single bonds, like H, F or Cl</dd>
+            <dt>q</dt><dd>overall charge, so a 1− ion adds one electron</dd>
+          </dl>
+          <p class="small">Atoms joined by a double bond, like the oxygens in CO<sub>2</sub>, add nothing to M. For CO<sub>2</sub>: (4 + 0 − 0) ÷ 2 = 2 pairs.</p>
+          <div class="worked">
+            <span class="label">Worked example: ammonia</span>
+            <p>N has 5 valence electrons and three H atoms: (5 + 3 − 0) ÷ 2 = 4 pairs. Three are bonding pairs, so one is a <span class="lp">lone pair</span>. Four pairs make a tetrahedron. With one corner taken by the lone pair, the atoms form a trigonal pyramid.</p>
+          </div>
+        </div>
+
+        <aside class="note"><b>Why 109.5°?</b>It's the angle between any two of four lines spread evenly from the centre of a sphere. In maths terms it's cos<sup>−1</sup>(−1/3).</aside>
+        <p>Chemists shorten this to AX<sub>3</sub>E: A for the central atom, X for each bonded atom and E for each lone pair. Each combination gives its own shape, and there are thirteen you'll meet all the time. Here they all are.</p>
+      </section>
+
+      <section class="explorer" id="explorer" aria-labelledby="explorer-h">
+        <div class="ex-head">
+          <h2 id="explorer-h">Shape explorer</h2>
+          <p>Every shape is one of the five parent shapes with some corners taken by lone pairs. Pick a molecule to see it in 3D.</p>
+        </div>
+        <div class="ex-grid">
+          <div class="ex-viewer">
+            <div class="stage" id="stage">
+              <canvas id="mol-canvas" tabindex="0" aria-label="3D molecule model. Use the arrow keys to rotate."></canvas>
+              <span class="stage-label" id="stage-label"></span>
+              <p class="stage-fallback" id="stage-fallback" hidden>The 3D model needs WebGL, which isn't available here. The details still update when you pick a molecule.</p>
+            </div>
+            <div class="legend">
+              <span><i class="sw sw-atom"></i>Atom</span>
+              <span><i class="sw sw-lp"></i>Lone pair</span>
+              <span id="drag-hint">Drag to rotate</span>
+              <button type="button" class="ghost" id="spin-btn" aria-pressed="true">Pause spin</button>
+            </div>
+          </div>
+          <div class="ex-matrix">
+            <table class="matrix" id="matrix">
+              <thead>
+                <tr><th class="corner" scope="col"></th><th colspan="4" scope="colgroup" class="lphead">Lone pairs</th></tr>
+                <tr><th class="corner" scope="col">Pairs</th><th scope="col">0</th><th scope="col">1</th><th scope="col">2</th><th scope="col">3</th></tr>
+              </thead>
+              <tbody id="matrix-body"></tbody>
+            </table>
+            <p class="matrix-cap">Rows count all the electron pairs on the central atom. Columns count how many of those are lone pairs.</p>
+          </div>
+          <div class="ex-info" id="info" aria-live="polite"></div>
+        </div>
+      </section>
+
+      <section class="prose" id="lone-pairs">
+        <h2>Lone pairs take up more room</h2>
+        <p>Anything with four pairs should have bond angles of 109.5°. Real molecules come close but don't quite match, and the gap tells you something.</p>
+        <div class="readout" role="group" aria-label="Bond angles of methane, ammonia and water">
+          <div><span class="ro-f">CH<sub>4</sub></span><span class="ro-a">109.5°</span><span class="ro-l">no lone pairs</span></div>
+          <div><span class="ro-f">NH<sub>3</sub></span><span class="ro-a">107°</span><span class="ro-l lp">1 lone pair</span></div>
+          <div><span class="ro-f">H<sub>2</sub>O</span><span class="ro-a">104.5°</span><span class="ro-l lp">2 lone pairs</span></div>
+        </div>
+        <p>A bonding pair is held between two nuclei, so it's stretched out and thin. A <span class="lp">lone pair</span> is held by one nucleus only. It sits closer to the central atom and spreads wider, so it pushes harder. The repulsions rank like this:</p>
+        <p class="order"><span class="lp">lone–lone</span> &gt; <span class="mix">lone–bond</span> &gt; bond–bond</p>
+        <p>Two other effects work the same way. Double bonds hold more electrons, so they push harder too. In methanal (H<sub>2</sub>C=O) the H–C–H angle closes to about 116° instead of 120°. Very electronegative atoms pull bonding pairs away from the centre, so those pairs need less room. NF<sub>3</sub> has an F–N–F angle of 102°, smaller than the 107° in NH<sub>3</sub>.</p>
+      </section>
+
+      <section class="prose" id="where">
+        <h2>Where do the lone pairs go?</h2>
+        <p>With four pairs or fewer, every corner of the shape is the same, so it doesn't matter where a lone pair sits. With five, it does. A trigonal bipyramid has two kinds of position. The two <strong>axial</strong> positions, top and bottom, each have three neighbours at 90°. The three <strong>equatorial</strong> positions around the middle have only two.</p>
+        <p>Repulsion at 90° is far stronger than at 120°, so lone pairs take the roomier equatorial spots. Add them one at a time and you get a seesaw (SF<sub>4</sub>), then a T-shape (ClF<sub>3</sub>), then a straight line (XeF<sub>2</sub>).</p>
+        <p>In an octahedron every position is the same, so the first lone pair can go anywhere. That gives a square pyramid (BrF<sub>5</sub>). The second lone pair goes as far from the first as it can, directly opposite, which leaves a flat square (XeF<sub>4</sub>).</p>
+        <div class="chips">
+          <span class="label">Open in the explorer</span>
+          <button type="button" class="chip" data-mol="SF4">SF<sub>4</sub></button>
+          <button type="button" class="chip" data-mol="ClF3">ClF<sub>3</sub></button>
+          <button type="button" class="chip" data-mol="XeF2">XeF<sub>2</sub></button>
+          <button type="button" class="chip" data-mol="BrF5">BrF<sub>5</sub></button>
+          <button type="button" class="chip" data-mol="XeF4">XeF<sub>4</sub></button>
+        </div>
+      </section>
+
+      <section class="prose" id="limits">
+        <h2>Where VSEPR breaks</h2>
+        <p>VSEPR is a rule of thumb, and it has blind spots.</p>
+        <div class="limits">
+          <div>
+            <h3>Heavier hydrides</h3>
+            <p>H<sub>2</sub>S has an H–S–H angle of 92°, and PH<sub>3</sub> is 93.5°. VSEPR expects something near 104° and 107°. In heavier atoms the lone pairs sit mostly in the s orbital, and the bonds use almost pure p orbitals, which are 90° apart.</p>
+          </div>
+          <div>
+            <h3>Lone pairs that do nothing</h3>
+            <p>[TeCl<sub>6</sub>]<sup>2−</sup> has six bonds and a lone pair (AX<sub>6</sub>E), so VSEPR says it should be distorted. It's a perfect octahedron. The lone pair stays in a spherical s orbital and doesn't point anywhere.</p>
+          </div>
+          <div>
+            <h3>Transition metals</h3>
+            <p>The shapes of metal complexes depend on their d electrons. VSEPR would call [Ni(CN)<sub>4</sub>]<sup>2−</sup> tetrahedral, but it's square planar because nickel(II) has eight d electrons. You need crystal field or ligand field theory for these.</p>
+          </div>
+        </div>
+        <p>For main-group molecules with lighter central atoms, though, VSEPR works well, and you can do it in your head.</p>
+      </section>
+
+      <section class="quiz" id="quiz">
+        <div class="intro">
+          <h2>Test yourself</h2>
+          <p>Use the formula, then pick a shape.</p>
+        </div>
+        <div class="quiz-grid">
+          <article class="q" data-answer="b">
+            <div class="q-f">XeF<sub>4</sub></div>
+            <p class="q-ask">What shape is it?</p>
+            <div class="q-opts">
+              <button type="button" data-opt="a">Tetrahedral</button>
+              <button type="button" data-opt="b">Square planar</button>
+              <button type="button" data-opt="c">Seesaw</button>
+            </div>
+            <div class="q-why" hidden tabindex="-1">
+              <p><strong class="q-verdict"></strong> Xe has 8 valence electrons and four F atoms: (8 + 4 − 0) ÷ 2 = 6 pairs. Four bond and two are lone pairs, so it's AX<sub>4</sub>E<sub>2</sub>. The lone pairs sit opposite each other, leaving a square.</p>
+              <button type="button" class="chip" data-mol="XeF4">See XeF<sub>4</sub> in 3D</button>
+            </div>
+          </article>
+          <article class="q" data-answer="c">
+            <div class="q-f">ClF<sub>3</sub></div>
+            <p class="q-ask">What shape is it?</p>
+            <div class="q-opts">
+              <button type="button" data-opt="a">Trigonal planar</button>
+              <button type="button" data-opt="b">Trigonal pyramidal</button>
+              <button type="button" data-opt="c">T-shaped</button>
+            </div>
+            <div class="q-why" hidden tabindex="-1">
+              <p><strong class="q-verdict"></strong> Cl has 7 valence electrons and three F atoms: (7 + 3 − 0) ÷ 2 = 5 pairs. Three bond and two are lone pairs, so it's AX<sub>3</sub>E<sub>2</sub>. Both lone pairs go equatorial, which leaves a T.</p>
+              <button type="button" class="chip" data-mol="ClF3">See ClF<sub>3</sub> in 3D</button>
+            </div>
+          </article>
+          <article class="q" data-answer="b">
+            <div class="q-f">I<sub>3</sub><sup>−</sup></div>
+            <p class="q-ask">What shape is it?</p>
+            <div class="q-opts">
+              <button type="button" data-opt="a">Bent</button>
+              <button type="button" data-opt="b">Linear</button>
+              <button type="button" data-opt="c">Trigonal planar</button>
+            </div>
+            <div class="q-why" hidden tabindex="-1">
+              <p><strong class="q-verdict"></strong> The middle I has 7 valence electrons, two I atoms bonded and a 1− charge: (7 + 2 + 1) ÷ 2 = 5 pairs. Two bond and three are lone pairs, so it's AX<sub>2</sub>E<sub>3</sub>. Three equatorial lone pairs leave a straight line, just like XeF<sub>2</sub>.</p>
+              <button type="button" class="chip" data-mol="XeF2">See XeF<sub>2</sub> in 3D</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="prose" id="reading">
+        <h2>Further reading</h2>
+        <ol class="refs">
+          <li>N. V. Sidgwick and H. M. Powell, <i>Proc. R. Soc. Lond. A</i>, 1940, <b>176</b>, 153–180.</li>
+          <li>R. J. Gillespie and R. S. Nyholm, <i>Q. Rev. Chem. Soc.</i>, 1957, <b>11</b>, 339–380.</li>
+          <li>R. J. Gillespie, “The VSEPR model revisited”, <i>Chem. Soc. Rev.</i>, 1992, <b>21</b>, 59–69.</li>
+        </ol>
+      </section>
+    </article>
+  </div>
+</main>
+
+<footer class="foot" id="about">
+  <div class="wrap">
+    <span class="brand">The Science of Stuff</span>
+    <p>The chemistry behind everyday things, one idea at a time. Written by Olly, a chemistry student at the University of Warwick.</p>
+    <p>© 2026 The Science of Stuff</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function () {
+  "use strict";
+  var reduce = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var R = Math.PI / 180;
+  function sph(p, a) { return [Math.sin(p * R) * Math.cos(a * R), Math.cos(p * R), Math.sin(p * R) * Math.sin(a * R)]; }
+  function ring(n, p, off) { var out = []; for (var i = 0; i < n; i++) out.push(sph(p, off + i * 360 / n)); return out; }
+  function pyr(alpha) { var c = Math.sqrt((Math.cos(alpha * R) + 0.5) / 1.5); return 180 - Math.acos(c) / R; }
+  function vee(half) { var s = Math.sin(half * R), c = Math.cos(half * R); return [[s, -c, 0], [-s, -c, 0]]; }
+  function sub(s) { return s.replace(/(\d+)/g, "<sub>$1</sub>"); }
+  var GEO = { 2: "linear", 3: "trigonal planar", 4: "tetrahedral", 5: "trigonal bipyramidal", 6: "octahedral" };
+
+  var EL = {
+    C: { c: "#5b636d", r: 0.5 }, B: { c: "#f2a487", r: 0.48 }, S: { c: "#e3c02e", r: 0.56 },
+    N: { c: "#3f6fe0", r: 0.5 }, O: { c: "#e0453a", r: 0.46 }, P: { c: "#f08a2b", r: 0.55 },
+    Cl: { c: "#3fb54a", r: 0.42 }, F: { c: "#9fdd7a", r: 0.34 }, H: { c: "#eef2f3", r: 0.26 },
+    Xe: { c: "#3aa3b2", r: 0.62 }, Br: { c: "#a23a2e", r: 0.58 }
+  };
+
+  var MOLS = [
+    { id: "CO2", name: "Carbon dioxide", A: "C", X: "O", d: 2, e: 0, shape: "Linear", short: "Linear", angle: "180°",
+      atoms: [[1, 0, 0], [-1, 0, 0]], lps: [],
+      note: "Each C=O double bond counts as one domain, so carbon has just two. They sit on opposite sides." },
+    { id: "BF3", name: "Boron trifluoride", A: "B", X: "F", d: 3, e: 0, shape: "Trigonal planar", short: "Trig. planar", angle: "120°",
+      atoms: [90, 210, 330].map(function (a) { return [Math.cos(a * R), Math.sin(a * R), 0]; }), lps: [],
+      note: "Boron has three pairs and no lone pairs, so the three fluorines spread out flat." },
+    { id: "SO2", name: "Sulfur dioxide", A: "S", X: "O", d: 3, e: 1, shape: "Bent", short: "Bent", angle: "≈119°",
+      atoms: vee(59.75), lps: [[0, 1, 0]],
+      note: "Two double bonds and one lone pair make three domains. The lone pair closes the angle a little below 120°." },
+    { id: "CH4", name: "Methane", A: "C", X: "H", d: 4, e: 0, shape: "Tetrahedral", short: "Tetrahedral", angle: "109.5°",
+      atoms: [[0, 1, 0]].concat(ring(3, 109.47, 90)), lps: [],
+      note: "Four bonding pairs spread evenly give a perfect tetrahedron." },
+    { id: "NH3", name: "Ammonia", A: "N", X: "H", d: 4, e: 1, shape: "Trigonal pyramidal", short: "Trig. pyramidal", angle: "107°",
+      atoms: ring(3, pyr(107), 90), lps: [[0, 1, 0]],
+      note: "Same four pairs as methane, but one corner is a lone pair. It pushes the N–H bonds together, from 109.5° to 107°." },
+    { id: "H2O", name: "Water", A: "O", X: "H", d: 4, e: 2, shape: "Bent", short: "Bent", angle: "104.5°",
+      atoms: vee(52.25), lps: [[0, 0.5774, 0.8165], [0, 0.5774, -0.8165]],
+      note: "Two lone pairs push the hydrogens even closer together. The H–O–H angle is 104.5°." },
+    { id: "PCl5", name: "Phosphorus pentachloride", A: "P", X: "Cl", d: 5, e: 0, shape: "Trigonal bipyramidal", short: "Trig. bipyramidal", angle: "90° and 120°",
+      atoms: [[0, 1, 0], [0, -1, 0]].concat(ring(3, 90, 90)), lps: [],
+      note: "Three equatorial chlorines at 120° to each other, and two axial chlorines at 90° to them." },
+    { id: "SF4", name: "Sulfur tetrafluoride", A: "S", X: "F", d: 5, e: 1, shape: "Seesaw", short: "Seesaw", angle: "≈102° and ≈173°",
+      atoms: [sph(3.45, 180), sph(176.55, 180), sph(90, 129), sph(90, 231)], lps: [[1, 0, 0]],
+      note: "The lone pair takes an equatorial spot, where it has fewer neighbours at 90°. What's left looks like a seesaw." },
+    { id: "ClF3", name: "Chlorine trifluoride", A: "Cl", X: "F", d: 5, e: 2, shape: "T-shaped", short: "T-shaped", angle: "≈87.5°",
+      atoms: [sph(2.5, 180), sph(177.5, 180), [-1, 0, 0]], lps: [sph(90, 60), sph(90, 300)],
+      note: "Both lone pairs sit equatorial. The three fluorines form a T, bent slightly back by the lone pairs." },
+    { id: "XeF2", name: "Xenon difluoride", A: "Xe", X: "F", d: 5, e: 3, shape: "Linear", short: "Linear", angle: "180°",
+      atoms: [[0, 1, 0], [0, -1, 0]], lps: ring(3, 90, 0),
+      note: "Three lone pairs fill the equator, leaving the two fluorines in a straight line." },
+    { id: "SF6", name: "Sulfur hexafluoride", A: "S", X: "F", d: 6, e: 0, shape: "Octahedral", short: "Octahedral", angle: "90°",
+      atoms: [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]], lps: [],
+      note: "Six bonding pairs, each one at 90° to its neighbours." },
+    { id: "BrF5", name: "Bromine pentafluoride", A: "Br", X: "F", d: 6, e: 1, shape: "Square pyramidal", short: "Sq. pyramidal", angle: "≈85°",
+      atoms: [[0, 1, 0]].concat(ring(4, 84.8, 45)), lps: [[0, -1, 0]],
+      note: "One lone pair at the bottom pushes the four fluorines around the middle up slightly." },
+    { id: "XeF4", name: "Xenon tetrafluoride", A: "Xe", X: "F", d: 6, e: 2, shape: "Square planar", short: "Sq. planar", angle: "90°",
+      atoms: [[1, 0, 0], [-1, 0, 0], [0, 0, 1], [0, 0, -1]], lps: [[0, 1, 0], [0, -1, 0]],
+      note: "The two lone pairs sit opposite each other, as far apart as possible, leaving a flat square of fluorines." }
+  ];
+  MOLS.forEach(function (m) { m.f = m.id; });
+  function axe(m) { var x = m.d - m.e; return "AX" + x + (m.e ? "E" + (m.e > 1 ? m.e : "") : ""); }
+  function find(id) { for (var i = 0; i < MOLS.length; i++) if (MOLS[i].id === id) return MOLS[i]; return null; }
+
+  // Matrix
+  var tbody = document.getElementById("matrix-body");
+  for (var d = 2; d <= 6; d++) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = '<th scope="row">' + d + "</th>";
+    for (var e = 0; e <= 3; e++) {
+      var m = null;
+      for (var i = 0; i < MOLS.length; i++) if (MOLS[i].d === d && MOLS[i].e === e) m = MOLS[i];
+      var td = document.createElement("td");
+      if (m) {
+        td.innerHTML = '<button type="button" data-mol="' + m.id + '" aria-pressed="false" aria-label="' + m.name + ", " + m.shape.toLowerCase() + '">' +
+          '<span class="m-f">' + sub(m.f) + '</span><span class="m-s">' + m.short + "</span></button>";
+      } else { td.className = "empty"; }
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+
+  var canvas = document.getElementById("mol-canvas");
+  var stage = document.getElementById("stage");
+  var stageLabel = document.getElementById("stage-label");
+  var fallback = document.getElementById("stage-fallback");
+  var spinBtn = document.getElementById("spin-btn");
+  var dragHint = document.getElementById("drag-hint");
+  var info = document.getElementById("info");
+  var spinning = !reduce;
+
+  function makeViewer() {
+    if (!window.THREE) throw new Error("three.js unavailable");
+    var T = window.THREE;
+    var renderer = new T.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setClearColor(0x000000, 0);
+    var scene = new T.Scene();
+    var cam = new T.PerspectiveCamera(32, 1, 0.1, 100);
+    cam.position.set(0, 0, 9);
+    scene.add(new T.AmbientLight(0xffffff, 0.55));
+    var key = new T.DirectionalLight(0xffffff, 0.75); key.position.set(3, 4, 6); scene.add(key);
+    var fill = new T.DirectionalLight(0xffffff, 0.25); fill.position.set(-4, -2, 3); scene.add(fill);
+    var pivot = new T.Group(); pivot.rotation.set(0.38, -0.55, 0); scene.add(pivot);
+    var mol = new T.Group(); pivot.add(mol);
+    var sphereG = new T.SphereGeometry(1, 40, 28);
+    var cylG = new T.CylinderGeometry(1, 1, 1, 20);
+    var mats = {};
+    function mat(hex) { return mats[hex] || (mats[hex] = new T.MeshPhongMaterial({ color: hex, shininess: 60, specular: 0x2a2a2a })); }
+    var bondMat = new T.MeshPhongMaterial({ color: 0x9aa6ac, shininess: 30 });
+    var lobeMat = new T.MeshPhongMaterial({ color: 0xcc2e68, transparent: true, opacity: 0.5, shininess: 80, depthWrite: false });
+    var dotMat = new T.MeshPhongMaterial({ color: 0x5a1030 });
+    var up = new T.Vector3(0, 1, 0);
+    var needsRender = true, raf = 0, last = 0, visible = true, dragging = false;
+
+    function frame(t) {
+      raf = 0;
+      var dt = last ? Math.min((t - last) / 1000, 0.05) : 0;
+      last = t;
+      if (spinning && !dragging) { pivot.rotation.y += dt * 0.45; needsRender = true; }
+      if (needsRender) { renderer.render(scene, cam); needsRender = false; }
+      if (visible && (spinning || dragging)) raf = requestAnimationFrame(frame); else last = 0;
+    }
+    function kick() { needsRender = true; if (!raf) raf = requestAnimationFrame(frame); }
+
+    function readLp() {
+      var v = getComputedStyle(document.documentElement).getPropertyValue("--lp").trim();
+      if (v) { try { lobeMat.color.set(v); dotMat.color.set(v).multiplyScalar(0.4); } catch (err) {} }
+      kick();
+    }
+
+    function show(m) {
+      while (mol.children.length) mol.remove(mol.children[0]);
+      var A = EL[m.A], X = EL[m.X];
+      var L = A.r + X.r + 0.75;
+      var c = new T.Mesh(sphereG, mat(A.c)); c.scale.setScalar(A.r); mol.add(c);
+      m.atoms.forEach(function (v) {
+        var dir = new T.Vector3(v[0], v[1], v[2]).normalize();
+        var a = new T.Mesh(sphereG, mat(X.c)); a.scale.setScalar(X.r); a.position.copy(dir).multiplyScalar(L); mol.add(a);
+        var b = new T.Mesh(cylG, bondMat); b.scale.set(0.085, L, 0.085); b.position.copy(dir).multiplyScalar(L / 2); b.quaternion.setFromUnitVectors(up, dir); mol.add(b);
+      });
+      m.lps.forEach(function (v) {
+        var dir = new T.Vector3(v[0], v[1], v[2]).normalize();
+        var g = new T.Group(); g.quaternion.setFromUnitVectors(up, dir); g.position.copy(dir).multiplyScalar(A.r + 0.42);
+        var lobe = new T.Mesh(sphereG, lobeMat); lobe.scale.set(0.36, 0.64, 0.36); lobe.renderOrder = 2; g.add(lobe);
+        [-1, 1].forEach(function (s) { var dot = new T.Mesh(sphereG, dotMat); dot.scale.setScalar(0.06); dot.position.set(s * 0.12, 0.12, 0); g.add(dot); });
+        mol.add(g);
+      });
+      kick();
+    }
+
+    function resize() {
+      var w = stage.clientWidth, h = stage.clientHeight;
+      if (!w || !h) return;
+      renderer.setSize(w, h, false);
+      cam.aspect = w / h;
+      var dist = 2.5 / Math.tan(cam.fov * R / 2);
+      if (cam.aspect < 1) dist /= cam.aspect;
+      cam.position.z = dist;
+      cam.updateProjectionMatrix();
+      kick();
+    }
+    if (window.ResizeObserver) new ResizeObserver(resize).observe(stage);
+    else window.addEventListener("resize", resize);
+    resize();
+
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (entries) {
+        visible = entries[0].isIntersecting;
+        if (visible) kick();
+      }).observe(stage);
+    }
+
+    var px = 0, py = 0;
+    canvas.addEventListener("pointerdown", function (ev) {
+      dragging = true; px = ev.clientX; py = ev.clientY;
+      try { canvas.setPointerCapture(ev.pointerId); } catch (err) {}
+      setSpin(false); kick();
+    });
+    canvas.addEventListener("pointermove", function (ev) {
+      if (!dragging) return;
+      var dx = ev.clientX - px, dy = ev.clientY - py; px = ev.clientX; py = ev.clientY;
+      pivot.rotation.y += dx * 0.01;
+      pivot.rotation.x = Math.max(-1.4, Math.min(1.4, pivot.rotation.x + dy * 0.01));
+      kick();
+    });
+    function endDrag() { dragging = false; }
+    canvas.addEventListener("pointerup", endDrag);
+    canvas.addEventListener("pointercancel", endDrag);
+    canvas.addEventListener("keydown", function (ev) {
+      var s = 0.15, used = true;
+      if (ev.key === "ArrowLeft") pivot.rotation.y -= s;
+      else if (ev.key === "ArrowRight") pivot.rotation.y += s;
+      else if (ev.key === "ArrowUp") pivot.rotation.x = Math.max(-1.4, pivot.rotation.x - s);
+      else if (ev.key === "ArrowDown") pivot.rotation.x = Math.min(1.4, pivot.rotation.x + s);
+      else used = false;
+      if (used) { ev.preventDefault(); setSpin(false); kick(); }
+    });
+
+    if (window.matchMedia) {
+      var mq = matchMedia("(prefers-color-scheme: dark)");
+      if (mq.addEventListener) mq.addEventListener("change", readLp); else if (mq.addListener) mq.addListener(readLp);
+    }
+    new MutationObserver(readLp).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    readLp();
+
+    return { show: show, kick: kick };
+  }
+
+  function setSpin(on) {
+    spinning = on;
+    spinBtn.setAttribute("aria-pressed", String(on));
+    spinBtn.textContent = on ? "Pause spin" : "Spin";
+    if (on && viewer) viewer.kick();
+  }
+  spinBtn.addEventListener("click", function () { setSpin(!spinning); });
+
+  var viewer = null;
+  try { viewer = makeViewer(); }
+  catch (err) { fallback.hidden = false; canvas.hidden = true; spinBtn.hidden = true; dragHint.hidden = true; }
+  setSpin(spinning);
+
+  function select(id, scroll) {
+    var m = find(id);
+    if (!m) return;
+    var btns = document.querySelectorAll("#matrix [data-mol]");
+    for (var i = 0; i < btns.length; i++) btns[i].setAttribute("aria-pressed", String(btns[i].getAttribute("data-mol") === id));
+    stageLabel.innerHTML = sub(m.f) + " · " + m.shape.toLowerCase();
+    canvas.setAttribute("aria-label", "3D model of " + m.name + ", " + m.shape.toLowerCase() + ". Use the arrow keys to rotate.");
+    info.innerHTML =
+      '<div class="info-top"><span class="info-f">' + sub(m.f) + '</span><span class="info-name">' + m.name + "</span></div>" +
+      '<dl class="facts">' +
+        "<div><dt>Notation</dt><dd class=\"mono\">" + sub(axe(m)) + "</dd></div>" +
+        "<div><dt>Electron pairs</dt><dd>" + m.d + " · " + GEO[m.d] + "</dd></div>" +
+        "<div><dt>Shape</dt><dd>" + m.shape + "</dd></div>" +
+        "<div><dt>Bond angle</dt><dd class=\"mono\">" + m.angle + "</dd></div>" +
+      "</dl>" +
+      '<p class="info-note">' + m.note + "</p>";
+    if (viewer) viewer.show(m);
+    if (scroll) document.getElementById("explorer").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  }
+
+  document.addEventListener("click", function (ev) {
+    var b = ev.target.closest && ev.target.closest("[data-mol]");
+    if (!b) return;
+    select(b.getAttribute("data-mol"), !b.closest("#matrix"));
+  });
+
+  select("NH3", false);
+
+  // Quiz
+  var qs = document.querySelectorAll(".q");
+  Array.prototype.forEach.call(qs, function (q) {
+    var ans = q.getAttribute("data-answer");
+    var why = q.querySelector(".q-why");
+    var verdict = q.querySelector(".q-verdict");
+    var opts = q.querySelectorAll(".q-opts button");
+    Array.prototype.forEach.call(opts, function (b) {
+      b.addEventListener("click", function () {
+        if (q.classList.contains("done")) return;
+        q.classList.add("done");
+        var ok = b.getAttribute("data-opt") === ans;
+        Array.prototype.forEach.call(opts, function (o) {
+          o.disabled = true;
+          if (o.getAttribute("data-opt") === ans) o.classList.add("right");
+        });
+        if (!ok) b.classList.add("wrong");
+        verdict.textContent = ok ? "Correct." : "Not quite.";
+        verdict.className = "q-verdict " + (ok ? "good" : "bad");
+        why.hidden = false;
+        try { why.focus({ preventScroll: true }); } catch (err) {}
+      });
+    });
+  });
+})();
+</script>
+
+</body>
+</html>
